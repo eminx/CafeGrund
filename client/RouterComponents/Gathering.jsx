@@ -218,7 +218,7 @@ class Gathering extends React.Component {
             right: 30
           }}
         >
-          <Link to={`/edit-booking/${gatheringData._id}`}>
+          <Link to={`/edit-activity/${gatheringData._id}`}>
             <Button>Edit</Button>
           </Link>
         </div>
@@ -268,9 +268,6 @@ class Gathering extends React.Component {
                           return (
                             <ListItem key={attendee.username + i}>
                               <List.Item.Meta
-                                avatar={
-                                  <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                                }
                                 title={
                                   <span
                                     className={
