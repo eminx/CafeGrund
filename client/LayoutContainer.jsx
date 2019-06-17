@@ -284,7 +284,7 @@ const EmailSignupForm = () => (
 const WertschafftInfo = () => (
   <Fragment>
     <h3 style={boldBabe}>Wertschafft</h3>
-    <p>Lenaustra 20, 12047 Berlin</p>
+    <p>Lenaustraße 20, 12047 Berlin</p>
     <p>
       <a href='mailto:info@radicow.com'>info@radicow.com</a>
     </p>
