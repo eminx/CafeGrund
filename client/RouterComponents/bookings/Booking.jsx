@@ -430,7 +430,7 @@ class Booking extends React.Component {
             right: 12
           }}
         >
-          <Link to={`/edit-booking/${bookingData._id}`}>Edit</Link>
+          <Link to={`/edit-activity/${bookingData._id}`}>Edit</Link>
         </div>
       ) : null;
 
