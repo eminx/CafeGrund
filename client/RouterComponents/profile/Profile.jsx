@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Blaze from 'meteor/gadicc:blaze-react-component';
-import ReactDropzone from 'react-dropzone';
-import ReactQuill from 'react-quill';
-import { editorFormats, editorModules } from '../../themes/skogen';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import Blaze from 'meteor/gadicc:blaze-react-component'
+import ReactDropzone from 'react-dropzone'
+import ReactQuill from 'react-quill'
+import { editorFormats, editorModules } from '../../themes/skogen'
 
 import {
   Row,
@@ -14,12 +14,12 @@ import {
   message,
   Divider,
   Modal
-} from 'antd/lib';
-const TextArea = Input.TextArea;
-import SkogenTerms from '../../UIComponents/SkogenTerms';
-const FormItem = Form.Item;
-import NiceList from '../../UIComponents/NiceList';
-import Loader from '../../UIComponents/Loader';
+} from 'antd/lib'
+import SkogenTerms from '../../UIComponents/SkogenTerms'
+import NiceList from '../../UIComponents/NiceList'
+import Loader from '../../UIComponents/Loader'
+const TextArea = Input.TextArea
+const FormItem = Form.Item
 
 class Profile extends React.Component {
   state = {
@@ -30,123 +30,121 @@ class Profile extends React.Component {
     // workDescription: '',
     // isUploading: false,
     // imageUrl: null
-  };
+  }
 
   handleSubmit = event => {
-    event.preventDefault();
+    event.preventDefault()
     this.props.form.validateFields((err, fieldsValue) => {
       if (err) {
-        console.log(err);
-        return;
+        console.log(err)
+        return
       }
       const values = {
         firstName: fieldsValue['firstName'],
-        lastName: fieldsValue['lastName'],
-        bio: fieldsValue['bio']
-      };
+        lastName: fieldsValue['lastName']
+        // bio: fieldsValue['bio']
+      }
 
       Meteor.call('saveUserInfo', values, (error, respond) => {
         if (error) {
-          console.log(error);
-          message.error(error.reason);
+          console.log(error)
+          message.error(error.reason)
         } else {
-          message.success('Your data is successfully saved');
+          message.success('Your data is successfully saved')
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   deleteAccount = () => {
     Meteor.call('deleteAccount', (error, respond) => {
       if (error) {
-        console.log(error);
-        message.error(error.reason);
-        return;
+        console.log(error)
+        message.error(error.reason)
       }
-    });
+    })
     // message.success('Your account is successfully deleted from our database');
     setTimeout(() => {
-      window.location.reload();
-    }, 400);
-  };
+      window.location.reload()
+    }, 400)
+  }
 
   handleWorkTitleChange = event => {
-    this.setState({ workTitle: event.target.value });
-  };
+    this.setState({ workTitle: event.target.value })
+  }
 
   handleWorkShortDescriptionChange = event => {
-    this.setState({ workShortDescription: event.target.value });
-  };
+    this.setState({ workShortDescription: event.target.value })
+  }
 
   handleWorkDescriptionChange = value => {
-    this.setState({ workDescription: value });
-  };
+    this.setState({ workDescription: value })
+  }
 
   createWork = () => {
-    const { workTitle, workDescription, imageUrl } = this.state;
+    const { workTitle, workDescription, imageUrl } = this.state
     const newWork = {
       title: workTitle,
       description: workDescription,
       imageUrl
-    };
+    }
     Meteor.call('createWork', newWork, (error, response) => {
       if (error) {
-        message.error('Could not create work due to ', error.error);
+        message.error('Could not create work due to ', error.error)
       }
-      console.log(response);
-      message.success('You work is successfully created');
+      console.log(response)
+      message.success('You work is successfully created')
       this.setState({
         isAddWorkModalOn: false
-      });
-    });
-  };
+      })
+    })
+  }
 
   removeWork = workId => {
-    console.log(workId);
-  };
+    console.log(workId)
+  }
 
   handleFileDrop = files => {
     if (files.length !== 1) {
-      message.error('Please drop only one file at a time.');
-      return;
+      message.error('Please drop only one file at a time.')
+      return
     }
 
-    this.setState({ isUploading: true });
-    const closeLoader = () => this.setState({ isUploading: false });
+    this.setState({ isUploading: true })
+    const closeLoader = () => this.setState({ isUploading: false })
 
-    const upload = new Slingshot.Upload('groupImageUpload');
+    const upload = new Slingshot.Upload('groupImageUpload')
     files.forEach(file => {
-      const parsedName = file.name.replace(/\s+/g, '-').toLowerCase();
+      const parsedName = file.name.replace(/\s+/g, '-').toLowerCase()
       const uploadableFile = new File([file], parsedName, {
         type: file.type
-      });
+      })
       upload.send(uploadableFile, (error, downloadUrl) => {
         if (error) {
-          console.error('Error uploading:', error);
-          message.error(error.reason);
-          closeLoader();
-          return;
+          console.error('Error uploading:', error)
+          message.error(error.reason)
+          closeLoader()
         } else {
           this.setState({
             imageUrl: downloadUrl
-          });
-          closeLoader();
+          })
+          closeLoader()
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
-  render() {
-    const { isUploading, imageUrl } = this.state;
-    const { currentUser } = this.props;
-    const { getFieldDecorator } = this.props.form;
+  render () {
+    const { isUploading, imageUrl } = this.state
+    const { currentUser } = this.props
+    const { getFieldDecorator } = this.props.form
     const {
       isDeleteModalOn,
       isAddWorkModalOn,
       workTitle,
       workShortDescription,
       workDescription
-    } = this.state;
+    } = this.state
 
     // const myWorksWithActions = myWorks.map(work => ({
     //   ...work,
@@ -160,13 +158,13 @@ class Profile extends React.Component {
 
     const formItemStyle = {
       marginBottom: 24
-    };
+    }
 
     return (
       <div style={{ padding: 24, minHeight: '80vh' }}>
         <Row gutter={24}>
           <Col md={8}>
-            <Blaze template="loginButtons" />
+            <Blaze template='loginButtons' />
           </Col>
         </Row>
         <Row>
@@ -184,7 +182,7 @@ class Profile extends React.Component {
                       }
                     ],
                     initialValue: currentUser ? currentUser.firstName : null
-                  })(<Input placeholder="first name" />)}
+                  })(<Input placeholder='first name' />)}
                 </FormItem>
 
                 <FormItem>
@@ -196,7 +194,7 @@ class Profile extends React.Component {
                       }
                     ],
                     initialValue: currentUser ? currentUser.lastName : null
-                  })(<Input placeholder="last name" />)}
+                  })(<Input placeholder='last name' />)}
                 </FormItem>
 
                 <FormItem
@@ -205,7 +203,7 @@ class Profile extends React.Component {
                     sm: { span: 16, offset: 0 }
                   }}
                 >
-                  <Button type="primary" htmlType="submit">
+                  <Button type='primary' htmlType='submit'>
                     Save
                   </Button>
                 </FormItem>
@@ -275,8 +273,8 @@ class Profile extends React.Component {
         </Row>
 
         <Modal
-          title="Are you sure?"
-          okText="Confirm Deletion"
+          title='Are you sure?'
+          okText='Confirm Deletion'
           onOk={this.deleteAccount}
           onCancel={() => this.setState({ isDeleteModalOn: false })}
           visible={isDeleteModalOn}
@@ -359,8 +357,8 @@ class Profile extends React.Component {
           />
         </Modal> */}
       </div>
-    );
+    )
   }
 }
 
-export default Form.create()(Profile);
+export default Form.create()(Profile)
