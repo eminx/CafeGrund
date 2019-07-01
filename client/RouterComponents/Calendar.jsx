@@ -1,15 +1,17 @@
-import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
-import moment from 'moment';
-import MediaQuery from 'react-responsive';
-import ReactDropzone from 'react-dropzone';
-import { Row, Col, Card, Divider, Tag, Button, Modal, message } from 'antd/lib';
-import Loader from '../UIComponents/Loader';
-import CalendarView from '../UIComponents/CalendarView';
-import NiceList from '../UIComponents/NiceList';
-import colors from '../constants/colors';
+import React from 'react'
+import { Link, Redirect } from 'react-router-dom'
+import moment from 'moment'
+import MediaQuery from 'react-responsive'
+import ReactDropzone from 'react-dropzone'
+import { Row, Col, Card, Divider, Tag, Button, Modal, message } from 'antd/lib'
+import Loader from '../UIComponents/Loader'
+import CalendarView from '../UIComponents/CalendarView'
+import NiceList from '../UIComponents/NiceList'
+import colors from '../constants/colors'
+import { Meteor } from 'meteor/meteor'
+const publicSettings = Meteor.settings.public
 
-const yesterday = moment(new Date()).add(-1, 'days');
+const yesterday = moment(new Date()).add(-1, 'days')
 
 class Calendar extends React.PureComponent {
   state = {
@@ -17,46 +19,46 @@ class Calendar extends React.PureComponent {
     editBooking: null,
     calendarFilter: 'All rooms',
     selectedBooking: null
-  };
+  }
 
   handleModeChange = e => {
-    const mode = e.target.value;
-    this.setState({ mode });
-  };
+    const mode = e.target.value
+    this.setState({ mode })
+  }
 
   handleSelectBooking = (booking, e) => {
-    e.preventDefault();
+    e.preventDefault()
     this.setState({
       selectedBooking: booking
-    });
-  };
+    })
+  }
 
   handleCalendarFilterChange = value => {
     this.setState({
       calendarFilter: value
-    });
-  };
+    })
+  }
 
   handleCloseModal = () => {
     this.setState({
       selectedBooking: null
-    });
-  };
+    })
+  }
 
   handleEditBooking = () => {
     this.setState({
       editBooking: true
-    });
-  };
+    })
+  }
 
   getBookingTimes = booking => {
     if (!booking) {
-      return '';
+      return ''
     }
     if (booking.startDate === booking.endDate) {
       return `${booking.startTime}–${booking.endTime} ${moment(
         booking.startDate
-      ).format('DD MMMM')}`;
+      ).format('DD MMMM')}`
     }
     return (
       moment(booking.startDate).format('DD MMM') +
@@ -66,15 +68,15 @@ class Calendar extends React.PureComponent {
       moment(booking.endDate).format('DD MMM') +
       ' ' +
       booking.endTime
-    );
-  };
+    )
+  }
 
   isCreator = () => {
-    const { currentUser } = this.props;
-    const { selectedBooking } = this.state;
+    const { currentUser } = this.props
+    const { selectedBooking } = this.state
 
     if (!selectedBooking || !currentUser) {
-      return false;
+      return false
     }
 
     if (
@@ -82,32 +84,31 @@ class Calendar extends React.PureComponent {
       currentUser &&
       currentUser.username === selectedBooking.authorName
     ) {
-      return true;
+      return true
     }
-  };
+  }
 
   handleDropDocument = files => {
-    const { currentUser } = this.props;
+    const { currentUser } = this.props
     if (files.length > 1) {
-      message.error('Please drop only one file at a time.');
-      return;
+      message.error('Please drop only one file at a time.')
+      return
     }
 
-    this.setState({ isUploading: true });
+    this.setState({ isUploading: true })
 
-    const closeLoader = () => this.setState({ isUploading: false });
+    const closeLoader = () => this.setState({ isUploading: false })
 
-    const upload = new Slingshot.Upload('groupDocumentUpload');
+    const upload = new Slingshot.Upload('groupDocumentUpload')
     files.forEach(file => {
-      const parsedName = file.name.replace(/\s+/g, '-').toLowerCase();
+      const parsedName = file.name.replace(/\s+/g, '-').toLowerCase()
       const uploadableFile = new File([file], parsedName, {
         type: file.type
-      });
+      })
       upload.send(uploadableFile, (error, downloadUrl) => {
         if (error) {
-          message.error(error.reason);
-          closeLoader();
-          return;
+          message.error(error.reason)
+          closeLoader()
         } else {
           Meteor.call(
             'createDocument',
@@ -117,81 +118,81 @@ class Calendar extends React.PureComponent {
             currentUser.username,
             (error, respond) => {
               if (error) {
-                message.error(error);
-                closeLoader();
+                message.error(error)
+                closeLoader()
               } else {
                 message.success(
                   `${
                     uploadableFile.name
                   } is succesfully uploaded and assigned to manuals!`
-                );
-                closeLoader();
+                )
+                closeLoader()
               }
             }
-          );
+          )
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   removeManual = documentId => {
-    const { currentUser } = this.props;
+    const { currentUser } = this.props
     if (!currentUser || !currentUser.isSuperAdmin) {
-      return;
+      return
     }
     Meteor.call('removeManual', documentId, (error, respond) => {
       if (error) {
-        console.log('error', error);
-        message.destroy();
-        message.error(error.error);
+        console.log('error', error)
+        message.destroy()
+        message.error(error.error)
       } else {
-        message.success('The manual is successfully removed');
+        message.success('The manual is successfully removed')
       }
-    });
-  };
+    })
+  }
 
-  render() {
+  render () {
     const {
       isLoading,
       currentUser,
       placesList,
       allActivities,
       manuals
-    } = this.props;
+    } = this.props
     const {
       editBooking,
       calendarFilter,
       selectedBooking,
       isUploading
-    } = this.state;
+    } = this.state
 
-    const futureBookings = [];
+    const futureBookings = []
 
     allActivities.filter(booking => {
       if (moment(booking.endDate).isAfter(yesterday)) {
-        futureBookings.push(booking);
+        futureBookings.push(booking)
       }
-    });
+    })
 
-    let filteredBookings = allActivities;
+    let filteredBookings = allActivities
 
     if (calendarFilter !== 'All rooms') {
       filteredBookings = allActivities.filter(
         booking => booking.room === calendarFilter
-      );
+      )
     }
 
     if (editBooking) {
-      return <Redirect to={`/edit-booking/${selectedBooking._id}`} />;
+      return <Redirect to={`/edit-booking/${selectedBooking._id}`} />
     }
 
-    const isSuperAdmin = currentUser && currentUser.isSuperAdmin;
+    const isSuperAdmin = currentUser && currentUser.isSuperAdmin
 
     const centerStyle = {
       display: 'flex',
       justifyContent: 'center',
       marginBottom: 24
-    };
+    }
 
     const manualsList = manuals.map(manual => ({
       ...manual,
@@ -201,15 +202,15 @@ class Calendar extends React.PureComponent {
           handleClick: () => this.removeManual(manual._id)
         }
       ]
-    }));
+    }))
 
     return (
       <div style={{ padding: 24 }}>
         {currentUser && currentUser.isRegisteredMember && (
           <Row gutter={24}>
             <div style={centerStyle}>
-              <Link to="/new-booking">
-                <Button type="primary">New Booking</Button>
+              <Link to='/new-booking'>
+                <Button type='primary'>New Booking</Button>
               </Link>
             </div>
           </Row>
@@ -225,7 +226,7 @@ class Calendar extends React.PureComponent {
           >
             <div style={{ width: '100%' }}>
               <div
-                className="tags-container"
+                className='tags-container'
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -266,7 +267,9 @@ class Calendar extends React.PureComponent {
         <Divider />
 
         <Row>
-          <h3 style={{ textAlign: 'center' }}>Skogen Manuals</h3>
+          <h3 style={{ textAlign: 'center' }}>
+            {publicSettings.contextName} Manuals
+          </h3>
           <Col md={8}>
             {isSuperAdmin && (
               <ReactDropzone onDrop={this.handleDropDocument}>
@@ -306,14 +309,14 @@ class Calendar extends React.PureComponent {
                     key={manual.documentLabel}
                     title={
                       <h4>
-                        <a href={manual.documentUrl} target="_blank">
+                        <a href={manual.documentUrl} target='_blank'>
                           {manual.documentLabel}
                         </a>
                       </h4>
                     }
                     bordered={false}
                     style={{ width: '100%', marginBottom: 0 }}
-                    className="empty-card-body"
+                    className='empty-card-body'
                   />
                 )}
               </NiceList>
@@ -323,8 +326,8 @@ class Calendar extends React.PureComponent {
 
         <Modal
           visible={Boolean(selectedBooking)}
-          okText="Edit"
-          cancelText="Close"
+          okText='Edit'
+          cancelText='Close'
           okButtonProps={!this.isCreator() && { style: { display: 'none' } }}
           onOk={this.handleEditBooking}
           onCancel={this.handleCloseModal}
@@ -374,8 +377,8 @@ class Calendar extends React.PureComponent {
           </Row>
         </Modal>
       </div>
-    );
+    )
   }
 }
 
-export default Calendar;
+export default Calendar

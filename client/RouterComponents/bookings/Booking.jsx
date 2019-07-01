@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 import Chattery from '../../chattery';
 import FancyDate from '../../UIComponents/FancyDate';
+import { Meteor } from 'meteor/meteor';
+const publicSettings = Meteor.settings.public;
 
 import {
   Row,
@@ -332,7 +334,7 @@ class Booking extends React.Component {
               <div style={{ paddingLeft: 12 }}>
                 <Divider />
                 <h4>Attendees</h4>
-                <span>Only visible to registered Skogen members</span>
+                <span>Only visible to registered {publicSettings.contextName} members</span>
                 <div
                   style={{
                     paddingBottom: 12,

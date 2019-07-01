@@ -343,7 +343,7 @@ class CreateBookingForm extends Component {
                 initialValue:
                   bookingData && bookingData.place
                     ? bookingData.place
-                    : 'Skogen'
+                    : publicSettings.contextName
               })(<Input placeholder="Please enter the name of the place" />)}
             </FormItem>
           )}
