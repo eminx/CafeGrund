@@ -285,13 +285,8 @@ const EmailSignupForm = () => (
 
 const ContextInfo = () => (
   <Fragment>
-<<<<<<< HEAD
-    <h3 style={boldBabe}>Wertschafft</h3>
-    <p>Lenaustraße 20, 12047 Berlin</p>
-=======
     <h3 style={boldBabe}>{publicSettings.contextName}</h3>
     <p>{publicSettings.contextAddress}</p>
->>>>>>> cafegrund
     <p>
       <a href="mailto:info@radicow.com">info@radicow.com</a>
     </p>
